@@ -34,8 +34,7 @@ public class UserService {
                 .parentChatId(parentChatId)
                 .role(Role.CHILD)
                 .build());
-        return "Farzand qo‘shildi ✅. Farzandga yuboring: \n\n" +
-                link + parentChatId;
+        return link + parentChatId;
     }
 
     @Transactional
