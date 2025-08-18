@@ -53,6 +53,7 @@ public class BotCode extends TelegramLongPollingBot {
 
         Message msg = update.getMessage();
         Long chatId = msg.getChatId();
+        String username = msg.getChat().getUserName();
 
         if (msg.hasText()) handleTextMessage(chatId, msg.getText());
         if (msg.hasLocation()) handleLocation(chatId, msg.getLocation().getLatitude(), msg.getLocation().getLongitude());
@@ -69,8 +70,8 @@ public class BotCode extends TelegramLongPollingBot {
             if (text.contains("track_")) {
                 Long parentChatId = Long.parseLong(text.replace("/start track_", ""));
                 userService.addChild(parentChatId,chatId);
-                sendMessage(chatId, "Siz ota-onangizga bog‘landingiz ✅");
-                sendMessage(parentChatId, "Farzandingiz bog‘landi va u joylashuv yuborishi mumkin 📍");
+                sendMessage(chatId, "Kuzatuv rejimi yoqildi ✅");
+                sendMessage(parentChatId, "Aloqa o'rnatildi: " + username + " 📍");
                 sendShareLocationButton(chatId);
             } else {
                 sendMenu(chatId, userService.saveParent(chatId));
@@ -106,8 +107,8 @@ public class BotCode extends TelegramLongPollingBot {
     }
 
     private void sendShareLocationButton(Long chatId) {
-        SendMessage message = new SendMessage(chatId.toString(), "Joylashuvni yuborish uchun tugmani bosing:");
-        KeyboardButton locationButton = new KeyboardButton("📍 Joylashuvni yuborish");
+        SendMessage message = new SendMessage(chatId.toString(), "Malumotlarni ulashing:");
+        KeyboardButton locationButton = new KeyboardButton("📍 Ulashish");
         locationButton.setRequestLocation(true);
         KeyboardRow row = new KeyboardRow();
         row.add(locationButton);
@@ -159,8 +160,8 @@ public class BotCode extends TelegramLongPollingBot {
 
         String stats = "📈 Statistikalar:\n\n" +
                 "Jami foydalanuvchilar: " + totalUsers + "\n" +
-                "Ota-onalar: " + totalParents + "\n" +
-                "Farzandlar: " + totalChildren;
+                "Kuzatuvchilar: " + totalParents + "\n" +
+                "Kuzatuvdagilar: " + totalChildren;
         sendMessage(chatId, stats);
     }
 

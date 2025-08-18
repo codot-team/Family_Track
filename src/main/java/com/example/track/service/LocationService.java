@@ -46,8 +46,8 @@ public class LocationService {
             Long parentChatId = child.getParentChatId();
             if (parentChatId != null) {
                 botCode.sendMessage(parentChatId,
-                        "Farzandingizning joylashuv malumotlari 1 soatdan keyin uziladi. " +
-                                "Iltimos, joylashuvni qayta yuborishi uchun murojaat qiling 📍");
+                        "1 soatdan so'ng: " + child.getChatId() + " bilan aloqa uziladi." +
+                                "Iltimos, malumotlarni qayta yuborishi uchun murojaat qiling 📍");
             }
         }
     }
