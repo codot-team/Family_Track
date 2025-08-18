@@ -76,7 +76,7 @@ public class BotCode extends TelegramLongPollingBot {
             } else {
                 sendMenu(chatId, userService.saveParent(chatId));
             }
-        } else if (text.equals("➕ Kuzatuv qo'shish")) {
+        } else if (text.equals("➕ Kuzatuv qo‘shish")) {
             String link = userService.generateLink(chatId);
             sendMessage(chatId, "Kuzatish uchun ✅\nUshbu linkni yuboring:\n" + link);
         } else if (text.equals("📊 Statistikalar")) {
