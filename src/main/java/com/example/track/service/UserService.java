@@ -27,26 +27,16 @@ public class UserService {
     }
 
     @Transactional
-    public String addChild(Long parentChatId, Long childChatId) {
-        if (userRepository.existsById(childChatId)) return "Bu chatId allaqachon mavjud ❌";
+    public void addChild(Long parentChatId, Long childChatId) {
         userRepository.save(User.builder()
                 .chatId(childChatId)
                 .parentChatId(parentChatId)
                 .role(Role.CHILD)
                 .build());
-        return link + parentChatId;
     }
 
-    @Transactional
-    public Long linkChildToParent(Long childChatId, Long parentChatId) {
-        User child = userRepository.findById(childChatId)
-                .orElse(User.builder()
-                        .chatId(childChatId)
-                        .role(Role.CHILD)
-                        .build());
-        child.setParentChatId(parentChatId);
-        userRepository.save(child);
-        return parentChatId;
+    public String generateLink(Long chatId){
+        return link + chatId;
     }
 
     public Long findParent(Long childChatId) {

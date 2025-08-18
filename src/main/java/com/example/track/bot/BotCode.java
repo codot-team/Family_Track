@@ -30,13 +30,12 @@ public class BotCode extends TelegramLongPollingBot {
     private String token;
 
     @Value("${guide.text}")
-    private String guideText;
+    private String guide;
 
     private final UserService userService;
     private final LocationService locationService;
 
     private Integer liveMessageId;
-    private final Long adminChatId = 7193645528L;
 
     @Override
     public String getBotUsername() {
@@ -60,6 +59,8 @@ public class BotCode extends TelegramLongPollingBot {
     }
 
     private void handleTextMessage(Long chatId, String text) {
+        Long adminChatId = 7193645528L;
+
         if (text.startsWith("/start")) {
             if (Objects.equals(chatId, adminChatId)) {
                 sendAdminMenu(chatId);
@@ -67,23 +68,20 @@ public class BotCode extends TelegramLongPollingBot {
             }
             if (text.contains("track_")) {
                 Long parentChatId = Long.parseLong(text.replace("/start track_", ""));
-                userService.linkChildToParent(chatId, parentChatId);
+                userService.addChild(parentChatId,chatId);
                 sendMessage(chatId, "Siz ota-onangizga bog‘landingiz ✅");
                 sendMessage(parentChatId, "Farzandingiz bog‘landi va u joylashuv yuborishi mumkin 📍");
                 sendShareLocationButton(chatId);
             } else {
-                sendParentMenu(chatId, userService.saveParent(chatId));
+                sendMenu(chatId, userService.saveParent(chatId));
             }
-        } else if (text.equals("➕ Farzand qo‘shish")) {
-            sendMessage(chatId, "Farzandning chatId raqamini yuboring:");
-        } else if (text.matches("\\d+")) {
-            Long childChatId = Long.parseLong(text);
-            String link = userService.addChild(chatId, childChatId);
-            sendMessage(chatId, "Farzand qo‘shildi ✅\nUshbu linkni yuboring:\n" + link);
-        } else if (text.equals("📊 Statistikalar") && Objects.equals(chatId, adminChatId)) {
+        } else if (text.equals("➕ Kuzatuv qo'shish")) {
+            String link = userService.generateLink(chatId);
+            sendMessage(chatId, "Kuzatish uchun ✅\nUshbu linkni yuboring:\n" + link);
+        } else if (text.equals("📊 Statistikalar")) {
             sendStatistics(chatId);
         } else if (text.equals("📖 Qo‘llanma")) {
-            sendMessage(chatId, guideText);
+            sendMessage(chatId, guide);
         }
     }
 
@@ -95,15 +93,14 @@ public class BotCode extends TelegramLongPollingBot {
         }
     }
 
-    private void sendParentMenu(Long chatId, String text) {
+    private void sendMenu(Long chatId, String text) {
         SendMessage message = new SendMessage(chatId.toString(), text);
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
         keyboard.setResizeKeyboard(true);
         KeyboardRow row1 = new KeyboardRow();
-        row1.add("➕ Farzand qo‘shish");
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add("📖 Qo‘llanma");
-        keyboard.setKeyboard(List.of(row1, row2));
+        row1.add("➕ Kuzatuv qo‘shish");
+        row1.add("📖 Qo‘llanma");
+        keyboard.setKeyboard(List.of(row1));
         message.setReplyMarkup(keyboard);
         executeSafely(message);
     }
@@ -159,6 +156,7 @@ public class BotCode extends TelegramLongPollingBot {
         long totalUsers = userService.countAllUsers();
         long totalParents = userService.countByRole(Role.PARENT);
         long totalChildren = userService.countByRole(Role.CHILD);
+
         String stats = "📈 Statistikalar:\n\n" +
                 "Jami foydalanuvchilar: " + totalUsers + "\n" +
                 "Ota-onalar: " + totalParents + "\n" +
